@@ -1,0 +1,62 @@
+---
+title: "Dygraphs Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+library(dygraphs)
+
+dygraph(nhtemp, main = "New Haven Temperatures") %>% 
+  dyRangeSelector(dateWindow = c("1920-01-01", "1960-01-01"))
+```
+
+```{r}
+# To use in a Shiny app, just include a
+# dygraphOutput()
+# in the UI and a
+# renderDygraph()
+# in the server
+
+library(shiny)
+
+ui <- fluidPage(
+  dygraphOutput("nh_temps")
+)
+
+server <- function(input, output){
+  output$nh_temps <- renderDygraph({
+    dygraph(nhtemp, main = "New Haven Temperatures") %>% 
+      dyRangeSelector(dateWindow = c("1920-01-01", "1960-01-01"))
+  })
+}
+
+shinyApp(ui, server)
+```
+
+```{r}
+# plotting more than one time series
+
+library(quantmod)
+
+getSymbols(c("MSFT", "HPQ"), from = "2014-06-01", auto.assign=TRUE)
+
+stocks <- cbind(MSFT[,2:4], HPQ[,2:4])
+dygraph(stocks, main = "Microsoft and HP Share Prices") %>% 
+  dySeries(c("MSFT.Low", "MSFT.Close", "MSFT.High"), label = "MSFT") %>%
+  dySeries(c("HPQ.Low", "HPQ.Close", "HPQ.High"), label = "HPQ")
+```
+
+
+```{r}
+# actual and predicted time series
+hw <- HoltWinters(ldeaths)
+p <- predict(hw, n.ahead = 36, prediction.interval = TRUE)
+all <- cbind(ldeaths, p)
+
+dygraph(all, "Deaths from Lung Disease (UK)") %>%
+  dySeries("ldeaths", label = "Actual") %>%
+  dySeries(c("p.lwr", "p.fit", "p.upr"), label = "Predicted")
+```
+

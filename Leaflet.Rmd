@@ -1,0 +1,155 @@
+---
+title: "Leaflet Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+library(leaflet)
+
+# A very basic leaflet map
+
+m <- leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng=-70.927358, lat=43.135953, popup = "You are here, having fun")
+m
+```
+
+
+```{r}
+# Add some circles to a map
+
+df = data.frame(Lat = rnorm(10), Long = -71:-80)
+leaflet(df) %>% 
+  addTiles() %>% 
+  addCircles()
+```
+
+
+```{r}
+# Add some circles to a map
+library(leaflet)
+df = data.frame(Lat = c(40.66, 34.01, 41.83, 29.73, 33.57, 40.00, 29.47, 32.81, 32.79, 30.30), Long = c(-73.93, -118.41, -87.68, -95.39, -112.09, -75.13, -98.52, -117.13, -96.76, -121.81))
+leaflet(df) %>% 
+  addTiles() %>% 
+  addCircles()
+
+
+```
+
+
+```{r}
+# alternatively,
+
+leaflet(df) %>%
+  addTiles() %>%
+  addCircles(lng = ~Long, lat = ~Lat)
+```
+
+```{r}
+# Custom tiles
+
+m <- leaflet() %>% setView(lng = -71.0589, lat = 42.3601, zoom = 12)
+m %>% addTiles()
+
+# m %>% addProviderTiles(providers$Stamen.Toner)
+
+# m %>% addProviderTiles(providers$CartoDB.Positron)
+
+# m %>% addProviderTiles(providers$CartoDB.DarkMatter)
+
+# m %>% addProviderTiles(providers$Esri.NatGeoWorldMap)
+
+# List of tiles here: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+
+```
+
+
+```{r}
+# Combining Tile layers by setting opacity levels
+
+#m %>% addProviderTiles(providers$MtbMap)
+
+# m %>% addProviderTiles(providers$Stamen.TonerLines)
+
+# m %>% addProviderTiles(providers$Stamen.TonerLabels)
+
+ m %>% addProviderTiles(providers$MtbMap) %>%
+   addProviderTiles(providers$Stamen.TonerLines,
+                    options = providerTileOptions(opacity = 0.35)) %>%
+   addProviderTiles(providers$Stamen.TonerLabels)
+```
+
+
+```{r}
+# Icons with popups and markers
+data(quakes)
+
+               # Show first 20 rows from the `quakes` dataset
+leaflet(data = quakes[1:20,]) %>% 
+  addTiles() %>%
+  addMarkers(~long, ~lat, popup = ~as.character(mag))
+
+leaflet(data = quakes[1:20,]) %>% 
+  addTiles() %>%
+  addMarkers(~long, ~lat, label = ~as.character(mag))
+```
+```{r}
+# Clustered markers
+
+leaflet(quakes) %>% 
+  addTiles() %>% 
+  addMarkers(
+  clusterOptions = markerClusterOptions()
+)
+```
+
+```{r}
+# Custom icons
+
+geekIcon <- makeIcon(
+  iconUrl = "https://image.flaticon.com/icons/svg/554/554857.svg",
+  iconWidth = 46, iconHeight = 110,
+)
+
+m <- leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng=-70.927358, lat=43.135953, icon = geekIcon, popup = "yay")
+m
+```
+
+
+```{r}
+# Color-coding data points
+  # 1. Create some data
+
+df <- data.frame(
+  cbind(
+    (runif(20) - .5) * 10 - 90.620130,  # lng
+    (runif(20) - .5) * 3.8 + 25.638077  # lat
+  )
+)
+names(df) <- c("lng","lat")
+df$type <- factor(
+  ifelse(runif(20) > 0.75, "pirate", "ship"),
+  c("ship", "pirate")
+)
+
+
+  # 2. View default appearance
+
+leaflet(df) %>% addTiles() %>% addCircleMarkers()
+
+
+#   # 3. Create a palette that maps factor levels to colors
+ pal <- colorFactor(c("navy", "red"), domain = c("ship", "pirate"))
+ 
+ leaflet(df) %>% addTiles() %>%
+   addCircleMarkers(
+     radius = ~ifelse(type == "ship", 6, 10),
+     color = ~pal(type),
+     stroke = FALSE, fillOpacity = 0.5
+   )
+```
+

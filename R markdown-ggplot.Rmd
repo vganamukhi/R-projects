@@ -1,0 +1,46 @@
+---
+title: "ggplot test R markdown"
+author: "Veena"
+date: "October 30, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+library(ggplot2)
+library(esquisse)
+
+data(mpg)
+force(mpg)
+View(mpg)
+attach(mpg)
+
+#1.What is the relationship between engine displacement and vehicle mileage? 
+
+#From the graph, it appears that there is strong negative correlation
+#between engine displacement and vehicle mileage
+
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point(color = "#0c4c8a") +
+  theme_minimal()
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
